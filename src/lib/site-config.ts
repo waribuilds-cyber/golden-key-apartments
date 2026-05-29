@@ -6,9 +6,9 @@ import room3br from "@/assets/room-3br.jpg";
 // WhatsApp number must be in international format with no "+", spaces or dashes,
 // e.g. "2348012345678". Leave empty to keep the buttons inert for now.
 export const contact = {
-  whatsapp: "", // e.g. "2348012345678"
-  phoneDisplay: "+234 800 000 0000",
-  phoneHref: "+2348000000000",
+  whatsapp: "2347038298158",
+  phoneDisplay: "+234 703 829 8158",
+  phoneHref: "+2347038298158",
   email: "hello@yourshortlet.com",
   addressLine: "Victoria Island, Lagos, Nigeria",
   socials: {
