@@ -59,6 +59,7 @@ function Index() {
       <Navbar />
       <main>
         <Hero />
+        <About />
         <Rooms />
         <Amenities />
         <Pricing />
