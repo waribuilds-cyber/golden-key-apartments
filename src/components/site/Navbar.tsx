@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { brand, whatsappLink } from "@/lib/site-config";
 
 const links = [
+  { href: "#about", label: "About" },
   { href: "#rooms", label: "Rooms" },
   { href: "#amenities", label: "Amenities" },
   { href: "#pricing", label: "Pricing" },
