@@ -14,16 +14,245 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      amenities: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          key: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          key: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          key?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          created_at: string
+          id: string
+          location: string
+          name: string
+          rating: number
+          sort_order: number
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          rating?: number
+          sort_order?: number
+          text?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          rating?: number
+          sort_order?: number
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      room_images: {
+        Row: {
+          created_at: string
+          id: string
+          image: string
+          room_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image: string
+          room_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image?: string
+          room_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_images_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          amenities: string[]
+          created_at: string
+          description: string
+          id: string
+          name: string
+          price: number
+          sleeps: number
+          sort_order: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[]
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          price?: number
+          sleeps?: number
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[]
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          price?: number
+          sleeps?: number
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          about_body: string
+          about_title: string
+          address_line: string
+          brand_name: string
+          city: string
+          email: string
+          facebook: string
+          hero_heading: string
+          hero_image: string | null
+          hero_subtitle: string
+          id: string
+          instagram: string
+          map_embed: string
+          phone_display: string
+          phone_href: string
+          tagline: string
+          twitter: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          about_body?: string
+          about_title?: string
+          address_line?: string
+          brand_name?: string
+          city?: string
+          email?: string
+          facebook?: string
+          hero_heading?: string
+          hero_image?: string | null
+          hero_subtitle?: string
+          id?: string
+          instagram?: string
+          map_embed?: string
+          phone_display?: string
+          phone_href?: string
+          tagline?: string
+          twitter?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Update: {
+          about_body?: string
+          about_title?: string
+          address_line?: string
+          brand_name?: string
+          city?: string
+          email?: string
+          facebook?: string
+          hero_heading?: string
+          hero_image?: string | null
+          hero_subtitle?: string
+          id?: string
+          instagram?: string
+          map_embed?: string
+          phone_display?: string
+          phone_href?: string
+          tagline?: string
+          twitter?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +379,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
