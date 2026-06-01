@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { siteContentQueryOptions } from "@/lib/site-content.query";
+import { settingsDefaults } from "@/lib/site-config";
 import { Navbar } from "@/components/site/Navbar";
 import { Hero } from "@/components/site/Hero";
 import { About } from "@/components/site/About";
@@ -10,6 +13,7 @@ import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQueryOptions),
   head: () => ({
     meta: [
       { title: "Lagos Luxe Stays | Luxury Shortlet Apartments in Lagos" },
@@ -41,32 +45,35 @@ export const Route = createFileRoute("/")({
             addressCountry: "NG",
           },
           priceRange: "₦₦₦",
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5.0",
-            reviewCount: "4",
-          },
         }),
       },
     ],
   }),
   component: Index,
+  errorComponent: ({ error }) => (
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 text-center">
+      <p className="text-sm text-muted-foreground">Couldn't load the page: {error.message}</p>
+    </div>
+  ),
 });
 
 function Index() {
+  const { data } = useSuspenseQuery(siteContentQueryOptions);
+  const settings = data.settings ?? settingsDefaults;
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <Navbar settings={settings} />
       <main>
-        <Hero />
-        <About />
-        <Rooms />
-        <Amenities />
-        <Pricing />
-        <Reviews />
-        <Contact />
+        <Hero settings={settings} />
+        <About settings={settings} />
+        <Rooms settings={settings} rooms={data.rooms} amenities={data.amenities} />
+        <Amenities amenities={data.amenities} />
+        <Pricing settings={settings} rooms={data.rooms} amenities={data.amenities} />
+        <Reviews reviews={data.reviews} />
+        <Contact settings={settings} />
       </main>
-      <Footer />
+      <Footer settings={settings} />
     </div>
   );
 }

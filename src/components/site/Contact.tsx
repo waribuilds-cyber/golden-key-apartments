@@ -1,7 +1,8 @@
 import { MessageCircle, Mail, Phone } from "lucide-react";
-import { contact, brand, whatsappLink } from "@/lib/site-config";
+import { whatsappLink } from "@/lib/site-config";
+import type { SiteSettings } from "@/lib/content.functions";
 
-export function Contact() {
+export function Contact({ settings }: { settings: SiteSettings }) {
   return (
     <section id="contact" className="scroll-mt-20 px-5 py-20 sm:py-28">
       <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-card to-accent/40 p-8 text-center shadow-lg sm:p-14">
@@ -17,7 +18,7 @@ export function Contact() {
         </p>
 
         <a
-          href={whatsappLink(`Hi ${brand.name}, I'd like to book an apartment.`)}
+          href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}, I'd like to book an apartment.`)}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
@@ -27,7 +28,7 @@ export function Contact() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <a
-            href={whatsappLink(`Hi ${brand.name}!`)}
+            href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}!`)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card/70 p-5 transition-colors hover:border-primary"
@@ -37,22 +38,34 @@ export function Contact() {
             <span className="text-xs text-muted-foreground">Chat with us</span>
           </a>
           <a
-            href={`tel:${contact.phoneHref}`}
+            href={`tel:${settings.phone_href}`}
             className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card/70 p-5 transition-colors hover:border-primary"
           >
             <Phone className="h-6 w-6 text-primary" />
             <span className="text-sm font-semibold text-foreground">Call</span>
-            <span className="text-xs text-muted-foreground">{contact.phoneDisplay}</span>
+            <span className="text-xs text-muted-foreground">{settings.phone_display}</span>
           </a>
           <a
-            href={`mailto:${contact.email}`}
+            href={`mailto:${settings.email}`}
             className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card/70 p-5 transition-colors hover:border-primary"
           >
             <Mail className="h-6 w-6 text-primary" />
             <span className="text-sm font-semibold text-foreground">Email</span>
-            <span className="text-xs text-muted-foreground">{contact.email}</span>
+            <span className="text-xs text-muted-foreground">{settings.email}</span>
           </a>
         </div>
+
+        {settings.map_embed && (
+          <div className="mt-10 overflow-hidden rounded-2xl border border-border">
+            <iframe
+              title="Location map"
+              src={settings.map_embed}
+              className="h-72 w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        )}
       </div>
     </section>
   );
