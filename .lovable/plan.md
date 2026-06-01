@@ -1,49 +1,54 @@
-## Goal
+# Plan: Room galleries, amenity chips & editable /admin dashboard
 
-Organize the project so it's clean and ready to push to GitHub, and add a Netlify static deployment setup with GitHub Actions for CI/CD. This is a marketing-only site with no backend, so a static export is ideal for Netlify.
+## Goals
+1. Swipeable image galleries on each room card (homepage).
+2. Amenities on room cards shown as inline chips (icon + word).
+3. A protected `/admin` dashboard with tabs to edit Hero, Rooms, Amenities, Reviews, Contact, Location, Prices, and upload images — saved live to the site.
 
-## What I'll add
+## Backend (Lovable Cloud)
+Enable Lovable Cloud to provide a database, image storage, and admin login.
 
-### 1. README.md (project root)
-A professional README with:
-- Project name (Lagos Luxe Stays) and short description
-- Tech stack (TanStack Start, React 19, Tailwind v4, Vite 7)
-- Local setup instructions (`bun install`, `bun run dev`)
-- Build/deploy notes
-- Note on editing `src/lib/site-config.ts` for contact details
+**Database tables** (all content moves from the static `site-config.ts` into the DB so the admin can edit it):
+- `site_settings` — single-row table: brand name, city, tagline, hero heading/subtitle/image, contact (whatsapp, phone, email, address), location (address line + map embed/lat-lng), socials.
+- `rooms` — id, type, name, price, description, sleeps, amenity keys, sort order.
+- `room_images` — room_id, image url, sort order (powers the gallery).
+- `amenities` — key, title, description, icon name, sort order.
+- `reviews` — name, location, rating, text, sort order.
 
-### 2. Static build output for Netlify
-The site is a static marketing page (no server functions in use). I'll configure a static prerender/SPA output so Netlify can host it as files.
+**Storage**: a public `site-images` bucket for hero + room photos uploaded from the admin.
 
-- `netlify.toml` at the root with:
-  - `build.command` = the static build command
-  - `build.publish` = the output folder
-  - SPA redirect rule (`/* -> /index.html 200`) so client routing works
-  - Node version pinned
+**Security**:
+- A `user_roles` table + `app_role` enum + `has_role()` security-definer function (roles never stored on profiles).
+- Public (anon) **read** access on all content tables so the homepage renders for visitors.
+- **Write** access (insert/update/delete) restricted to admins via `has_role(auth.uid(),'admin')`.
+- Storage: public read; admin-only write.
 
-### 3. GitHub Actions CI/CD (`.github/workflows/deploy.yml`)
-A workflow that on push to `main`:
-- Checks out the repo
-- Sets up Bun
-- Installs dependencies
-- Runs lint + build
-- Deploys to Netlify using the official Netlify deploy action
+**Admin account**: Email/password auth. You'll create one admin account; I'll wire it so that account is granted the `admin` role. Login lives at `/login`; `/admin` is gated by an `_authenticated` + admin-role guard and redirects non-admins.
 
-This requires two GitHub repository secrets (you add these in GitHub settings — I'll document them in the README):
-- `NETLIFY_AUTH_TOKEN`
-- `NETLIFY_SITE_ID`
+## Frontend
 
-### 4. Repo hygiene
-- Verify `.gitignore` already covers `node_modules`, build output, env files (it does — minor additions if needed).
-- Add a `.nvmrc` / Node version pin for consistent builds.
-- Optionally add a `LICENSE` placeholder note in the README.
+### Homepage data
+- Replace the hardcoded imports in `site-config.ts` with data fetched from the DB (via server functions / TanStack Query) so edits in the admin appear on the live site. Keep the existing visual design and tokens unchanged.
+
+### Room galleries (`Rooms.tsx`)
+- Replace the single `<img>` with the existing shadcn `Carousel` (embla) showing each room's images, swipeable on mobile with arrows on desktop and dot indicators. Falls back to a single image when only one exists.
+
+### Amenity chips (`Rooms.tsx` + `amenity-icon.tsx`)
+- Render each amenity as an inline pill chip: icon + label text together, wrapping in a row (replacing the icon-only row). Uses existing semantic tokens.
+
+### Admin dashboard (`/admin`)
+- Tabbed interface (shadcn `Tabs`): **Hero, Rooms, Amenities, Reviews, Contact, Location, Prices, Images**.
+- Each tab is a form to edit its records with save buttons; Rooms/Amenities/Reviews support add/edit/delete and reorder.
+- Image upload control (hero + per-room galleries) uploading to the `site-images` bucket and saving the returned URL.
+- Prices tab edits nightly rates per room.
+- Location tab edits the address and map embed shown in the footer/contact.
+- All inputs validated with zod; writes go through authenticated server functions (RLS enforced).
 
 ## Technical notes
-
-- Current `vite.config.ts` uses `@lovable.dev/vite-tanstack-config` which defaults Nitro to a Cloudflare target. For a no-backend marketing site, the cleanest Netlify path is a static build. I'll set the build to produce static assets and point `netlify.toml` to that output, keeping the existing Cloudflare-oriented config untouched for the Lovable preview.
-- If the static prerender output path differs from expectations, I'll verify by running the build once and confirming the publish directory before finalizing `netlify.toml`.
-- No code/logic changes to the site components — this is purely build/deploy/repo configuration.
+- Content reads use public server functions (admin-elevated/anon-readable) called from route loaders/components so SSR and SEO keep working — no protected fn in a public loader.
+- Admin writes use `createServerFn` with `requireSupabaseAuth` + admin-role check; the bearer attacher in `src/start.ts` will be verified/added.
+- Existing design system, fonts, colors, and section layouts are preserved; this is additive (data source + new admin route).
 
 ## Out of scope
-- No changes to the website's UI, content, or business logic.
-- No switching the Lovable preview away from its current setup.
+- No change to the WhatsApp booking flow or overall visual style.
+- Public visitors cannot edit anything; only the single admin can.
