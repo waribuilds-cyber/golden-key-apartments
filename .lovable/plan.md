@@ -1,38 +1,49 @@
-## Luxury Lagos Shortlet Apartment Website
+## Goal
 
-A polished, conversion-focused single-page marketing site for luxury shortlet apartments in Lagos, built to turn browsers into bookings with frictionless WhatsApp/contact CTAs.
+Organize the project so it's clean and ready to push to GitHub, and add a Netlify static deployment setup with GitHub Actions for CI/CD. This is a marketing-only site with no backend, so a static export is ideal for Netlify.
 
-### Design language
-- **Palette**: cream background (`#FBF7F0`-ish), burnt orange primary (`#C8551B`-ish), gold accent (`#C9A24B`-ish), dark charcoal text (`#2B2724`). Footer = dark charcoal with cream text.
-- **Typography**: an elegant display serif for headers (e.g. Playfair Display / Cormorant) paired with a clean sans for body (e.g. Inter/Work Sans) loaded via Google Fonts.
-- **Style**: warm, premium, generous spacing, soft shadows, gold hairline details, rounded cards. Mobile-first responsive (the preview is mobile), fast-loading optimized images.
-- All colors as semantic oklch tokens in `src/styles.css` — no hardcoded colors in components.
+## What I'll add
 
-### Sections (all on the home route, anchor-scrolled from a sticky nav)
-1. **Sticky header/nav** — logo wordmark, anchor links (Rooms, Amenities, Pricing, Reviews, Contact), and a burnt-orange "BOOK NOW" button.
-2. **Hero** — full-bleed luxury room image, headline "Luxury Apartments in Lagos", short subheadline, primary "BOOK NOW" CTA + secondary "View Rooms".
-3. **Room Gallery** — three room types (1BR, 2BR, 3BR), each as a card with a hero photo + a small thumbnail strip/gallery, description, nightly price (gold/orange emphasis), amenity icons, and a per-room "Book on WhatsApp" CTA.
-   - 1BR ₦100,000 / night · 2BR ₦220,000 / night · 3BR ₦280,000 / night
-4. **Amenities** — icon + label + short description grid for: 24/7 Power, WiFi, Fully-Equipped Kitchen, Air Conditioning, Washing Machine (Lucide icons).
-5. **Pricing table** — clean comparison of all three room types with nightly rates and key inclusions, gold/orange highlighted rates.
-6. **Reviews** — testimonial cards with star ratings (a handful of realistic sample reviews).
-7. **Booking / Contact** — prominent "Book Now" via WhatsApp, plus WhatsApp link, email, and phone. All contact values left as clearly-marked placeholders the user can fill in later, wired through a single config so they're easy to update.
-8. **Footer** — dark charcoal, cream text: brand blurb, quick links, address (placeholder), and social media links (Instagram, Facebook, X/Twitter).
+### 1. README.md (project root)
+A professional README with:
+- Project name (Lagos Luxe Stays) and short description
+- Tech stack (TanStack Start, React 19, Tailwind v4, Vite 7)
+- Local setup instructions (`bun install`, `bun run dev`)
+- Build/deploy notes
+- Note on editing `src/lib/site-config.ts` for contact details
 
-### Images (AI-generated, saved to `src/assets/`)
-Generate warm, well-lit, professional photos:
-- 1 hero (best suite, golden-hour warmth)
-- Per room type: 1 main + 1–2 gallery shots (1BR, 2BR, 3BR interiors)
-Images imported as ES6 assets and rendered with `loading="lazy"`, alt text, and responsive sizing for fast loading.
+### 2. Static build output for Netlify
+The site is a static marketing page (no server functions in use). I'll configure a static prerender/SPA output so Netlify can host it as files.
 
-### Technical notes
-- Single home route `src/routes/index.tsx` replacing the placeholder, composed from small section components in `src/components/`.
-- A `src/lib/site-config.ts` holding contact placeholders (WhatsApp number, email, phone, socials, address) and room/pricing data so content is centralized and editable.
-- WhatsApp CTAs use `https://wa.me/<number>?text=...` deep links (number left blank/placeholder for now, so buttons are wired but inert until filled).
-- Per-section SEO via the route `head()` (title <60 chars, meta description <160 chars, single H1 in hero, semantic HTML, alt text, JSON-LD `LodgingBusiness`).
-- No backend required — fully static marketing site. (Lovable Cloud not needed unless you later want a booking form that stores leads.)
+- `netlify.toml` at the root with:
+  - `build.command` = the static build command
+  - `build.publish` = the output folder
+  - SPA redirect rule (`/* -> /index.html 200`) so client routing works
+  - Node version pinned
 
-### Out of scope (for now)
-- Actual booking engine / payments and real contact details (placeholders only, as requested).
+### 3. GitHub Actions CI/CD (`.github/workflows/deploy.yml`)
+A workflow that on push to `main`:
+- Checks out the repo
+- Sets up Bun
+- Installs dependencies
+- Runs lint + build
+- Deploys to Netlify using the official Netlify deploy action
 
-Once approved I'll generate the images, build the sections, and verify the layout renders cleanly on mobile and desktop.
+This requires two GitHub repository secrets (you add these in GitHub settings — I'll document them in the README):
+- `NETLIFY_AUTH_TOKEN`
+- `NETLIFY_SITE_ID`
+
+### 4. Repo hygiene
+- Verify `.gitignore` already covers `node_modules`, build output, env files (it does — minor additions if needed).
+- Add a `.nvmrc` / Node version pin for consistent builds.
+- Optionally add a `LICENSE` placeholder note in the README.
+
+## Technical notes
+
+- Current `vite.config.ts` uses `@lovable.dev/vite-tanstack-config` which defaults Nitro to a Cloudflare target. For a no-backend marketing site, the cleanest Netlify path is a static build. I'll set the build to produce static assets and point `netlify.toml` to that output, keeping the existing Cloudflare-oriented config untouched for the Lovable preview.
+- If the static prerender output path differs from expectations, I'll verify by running the build once and confirming the publish directory before finalizing `netlify.toml`.
+- No code/logic changes to the site components — this is purely build/deploy/repo configuration.
+
+## Out of scope
+- No changes to the website's UI, content, or business logic.
+- No switching the Lovable preview away from its current setup.
