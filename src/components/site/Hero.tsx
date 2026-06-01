@@ -1,13 +1,15 @@
 import { MessageCircle, Star } from "lucide-react";
-import heroSuite from "@/assets/hero-suite.jpg";
-import { brand, whatsappLink } from "@/lib/site-config";
+import { whatsappLink, fallbackImages } from "@/lib/site-config";
+import type { SiteSettings } from "@/lib/content.functions";
 
-export function Hero() {
+export function Hero({ settings }: { settings: SiteSettings }) {
+  const heroImage = settings.hero_image || fallbackImages.hero;
+
   return (
     <section id="top" className="relative isolate min-h-[88vh] w-full overflow-hidden">
       <img
-        src={heroSuite}
-        alt="Luxury master suite with golden-hour Lagos skyline view"
+        src={heroImage}
+        alt={`Luxury master suite in ${settings.city}`}
         width={1920}
         height={1280}
         className="absolute inset-0 -z-10 h-full w-full object-cover"
@@ -21,16 +23,15 @@ export function Hero() {
         </div>
 
         <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.05] text-background sm:text-6xl md:text-7xl">
-          Luxury Apartments in {brand.city}
+          {settings.hero_heading}
         </h1>
         <p className="mt-5 max-w-xl text-base text-background/85 sm:text-lg">
-          Beautifully furnished shortlet apartments with 24/7 power, fast WiFi and
-          warm, world-class hospitality. Book in seconds — straight from WhatsApp.
+          {settings.hero_subtitle}
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a
-            href={whatsappLink(`Hi ${brand.name}, I'd like to book an apartment.`)}
+            href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}, I'd like to book an apartment.`)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
