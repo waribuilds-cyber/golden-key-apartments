@@ -1,10 +1,19 @@
 import { Check, MessageCircle } from "lucide-react";
-import { rooms, whatsappLink, formatNaira, brand } from "@/lib/site-config";
+import { whatsappLink, formatNaira } from "@/lib/site-config";
 import { SectionHeading } from "./SectionHeading";
+import type { SiteSettings, Room, Amenity } from "@/lib/content.functions";
 
-const inclusions = ["24/7 Power", "High-Speed WiFi", "Kitchen", "Air Conditioning", "Washing Machine"];
+export function Pricing({
+  settings,
+  rooms,
+  amenities,
+}: {
+  settings: SiteSettings;
+  rooms: Room[];
+  amenities: Amenity[];
+}) {
+  const inclusions = amenities.map((a) => a.title);
 
-export function Pricing() {
   return (
     <section id="pricing" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20 sm:py-28">
       <SectionHeading
@@ -39,7 +48,7 @@ export function Pricing() {
                 </td>
                 <td className="px-6 py-5 text-right">
                   <a
-                    href={whatsappLink(`Hi ${brand.name}, I'd like to book the ${room.type} at ${formatNaira(room.price)}/night.`)}
+                    href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}, I'd like to book the ${room.type} at ${formatNaira(room.price)}/night.`)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
@@ -67,7 +76,7 @@ export function Pricing() {
                 </div>
               </div>
               <a
-                href={whatsappLink(`Hi ${brand.name}, I'd like to book the ${room.type} at ${formatNaira(room.price)}/night.`)}
+                href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}, I'd like to book the ${room.type} at ${formatNaira(room.price)}/night.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
@@ -79,13 +88,15 @@ export function Pricing() {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3">
-        {inclusions.map((item) => (
-          <span key={item} className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
-            <Check size={16} className="text-gold" /> {item}
-          </span>
-        ))}
-      </div>
+      {inclusions.length > 0 && (
+        <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3">
+          {inclusions.map((item) => (
+            <span key={item} className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
+              <Check size={16} className="text-gold" /> {item}
+            </span>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
