@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { brand, whatsappLink } from "@/lib/site-config";
+import { whatsappLink } from "@/lib/site-config";
+import type { SiteSettings } from "@/lib/content.functions";
 
 const links = [
   { href: "#about", label: "About" },
@@ -11,15 +12,16 @@ const links = [
   { href: "#contact", label: "Contact" },
 ];
 
-export function Navbar() {
+export function Navbar({ settings }: { settings: SiteSettings }) {
   const [open, setOpen] = useState(false);
+  const [first, ...rest] = settings.brand_name.split(" ");
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
         <a href="#top" className="flex items-baseline gap-1 font-display text-xl font-bold tracking-tight text-foreground">
-          {brand.name.split(" ")[0]}
-          <span className="text-primary">{brand.name.split(" ").slice(1).join(" ")}</span>
+          {first}
+          <span className="text-primary">{rest.join(" ")}</span>
         </a>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -29,7 +31,7 @@ export function Navbar() {
             </a>
           ))}
           <a
-            href={whatsappLink(`Hi ${brand.name}, I'd like to book an apartment.`)}
+            href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}, I'd like to book an apartment.`)}
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:scale-105"
@@ -61,7 +63,7 @@ export function Navbar() {
               </a>
             ))}
             <a
-              href={whatsappLink(`Hi ${brand.name}, I'd like to book an apartment.`)}
+              href={whatsappLink(settings.whatsapp, `Hi ${settings.brand_name}, I'd like to book an apartment.`)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
